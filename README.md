@@ -70,7 +70,7 @@ According to the re-identification task definition, both validation and test set
 | :----------------------------- | :--: | :------: |
 | `bounding_box_train` (Train)   | 1800 | 12,988   |
 | `val_query` (Validation Query) | 300  | 691      |
-| `test_query` (Test Query)      | 300  | 70       |
+| `test_query` (Test Query)      | 300  | 706       |
 | `bounding_box_test` (Gallery)  | 600  | 4,253    |
 
 ## Code Structure
