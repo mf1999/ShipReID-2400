@@ -1,0 +1,61 @@
+MODEL:
+  PRETRAIN_CHOICE: 'imagenet'
+  METRIC_LOSS_TYPE: 'triplet'
+  TOKEN_CONTRAST_TYPE: 'triplet'
+  IF_LABELSMOOTH: 'on'
+  IF_WITH_CENTER: 'no'
+  NAME: 'ViT-B-16'
+  STRIDE_SIZE: [16, 16]
+  ID_LOSS_WEIGHT: 0.5
+  PART_ID_LOSS_WEIGHT: 0.5
+  TRIPLET_LOSS_WEIGHT: 1.0
+  PART_TRIPLET_LOSS_WEIGHT: 1.0
+  TOKEN_CONTRAST_LOSS_WEIGHT: 1.0
+  PART_H: 16
+  PART_W: 4
+
+INPUT:
+  SIZE_TRAIN: [256, 256]
+  SIZE_TEST: [256, 256]
+  PROB: 0.5
+  RE_PROB: 0.5
+  PADDING: 10
+  PIXEL_MEAN: [0.5, 0.5, 0.5]
+  PIXEL_STD: [0.5, 0.5, 0.5]
+
+DATALOADER:
+  SAMPLER: 'softmax_triplet'
+  NUM_INSTANCE: 4
+  NUM_WORKERS: 4
+
+SOLVER:
+  IMS_PER_BATCH: 8
+  OPTIMIZER_NAME: "Adam"
+  BASE_LR: 0.0000275
+  WARMUP_METHOD: 'linear'
+  WARMUP_ITERS: 5
+  WARMUP_FACTOR: 0.1
+  WEIGHT_DECAY: 0.0001
+  WEIGHT_DECAY_BIAS: 0.0001
+  LARGE_FC_LR: False
+  MAX_EPOCHS: 5          # smoke test: just 5 epochs
+  CHECKPOINT_PERIOD: 5
+  LOG_PERIOD: 10
+  EVAL_PERIOD: 5
+  BIAS_LR_FACTOR: 2
+  STEPS: [3, 4]
+  GAMMA: 0.1
+
+TEST:
+  EVAL: True
+  IMS_PER_BATCH: 16
+  RE_RANKING: False
+  WEIGHT: ''
+  NECK_FEAT: 'before'
+  FEAT_NORM: 'yes'
+
+DATASETS:
+  NAMES: ('VesselReIDSmoke')
+  ROOT_DIR: ('C:/Users/matej/PycharmProjects/AnalizaDinamicnihScena/ShipReID-2400/data')
+
+OUTPUT_DIR: './logs/smoke'

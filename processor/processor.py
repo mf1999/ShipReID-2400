@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from utils.meter import AverageMeter
 from utils.metrics import R1_mAP_eval
-from torch.cuda import amp
+import torch.amp as amp
 import torch.distributed as dist
 from torch.utils.tensorboard import SummaryWriter
 import numpy as np
@@ -54,7 +54,7 @@ def do_train(cfg,
 
     evaluator = R1_mAP_eval(num_val_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM)
     test_evaluator = R1_mAP_eval(num_test_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM)
-    scaler = amp.GradScaler()
+    scaler = amp.GradScaler('cuda')
     
     # train
     import time
@@ -74,7 +74,6 @@ def do_train(cfg,
         evaluator.reset()
         test_evaluator.reset()
 
-        scheduler.step()
         model.train()
 
         for n_iter, (img, vid, target_cam, target_view) in enumerate(train_loader):
@@ -90,7 +89,7 @@ def do_train(cfg,
                 target_view = target_view.to(device)
             else: 
                 target_view = None
-            with amp.autocast(enabled=True):
+            with amp.autocast('cuda', enabled=True):
                 score, part_score, feat, part_feat, part_features = model(img, cam_label=target_cam, view_label=target_view)
                 loss, (ID_LOSS, PART_ID_LOSS, TRI_LOSS, PART_TRI_LOSS, TOKEN_CONTRAST_LOSS) = loss_fn(score, part_score, feat, part_feat, part_features, target, target_cam, M=M)
 
@@ -123,6 +122,7 @@ def do_train(cfg,
                             .format(epoch, (n_iter + 1), len(train_loader),
                                     loss_meter.avg, acc_meter.avg, scheduler.get_lr()[0]))
 
+        scheduler.step()
         end_time = time.time()
         time_per_batch = (end_time - start_time) / (n_iter + 1)
 

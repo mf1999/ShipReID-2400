@@ -101,3 +101,41 @@ class ShipReID2400(BaseImageDataset):
         print("  val_query     | {:5d} | {:8d} | {:9d}".format(num_val_query_pids, num_val_query_imgs, num_val_query_cams))
         print("  gallery       | {:5d} | {:8d} | {:9d}".format(num_gallery_pids, num_gallery_imgs, num_gallery_cams))
         print("  --------------------------------------------")
+
+class VesselReID(ShipReID2400):
+    """VesselReID dataset adapter for ShipReID-2400 training pipeline.
+
+    Use DATASETS.NAMES = ('VesselReID') and set DATASETS.ROOT_DIR to the
+    parent of the 'VesselReID' data directory (which must contain the four
+    standard sub-folders: bounding_box_train, val_query, test_query,
+    bounding_box_test).
+    """
+    dataset_dir = 'VesselReID'
+
+    def __init__(self, root='', dataset_dir=None, **kwargs):
+        # Ignore dataset_dir passed by make_dataloader (it passes DATASETS.NAMES);
+        # use our class-level dataset_dir instead.
+        super(VesselReID, self).__init__(root=root, dataset_dir=self.__class__.dataset_dir, **kwargs)
+
+    def _process_dir(self, dir_path, relabel=False):
+        img_paths = glob.glob(osp.join(dir_path, '*.jpg'))
+        pattern = re.compile(r'([-\d]+)_c(\d+)')
+
+        pid_container = set()
+        for img_path in sorted(img_paths):
+            pid, _ = map(int, pattern.search(img_path).groups())
+            pid_container.add(pid)
+        pid2label = {pid: label for label, pid in enumerate(pid_container)}
+        dataset = []
+        for img_path in sorted(img_paths):
+            pid, camid = map(int, pattern.search(img_path).groups())
+            if relabel:
+                pid = pid2label[pid]
+            camid -= 1  # index starts from 0
+            dataset.append((img_path, self.pid_begin + pid, camid, 0))
+        return dataset
+
+
+class VesselReIDSmoke(VesselReID):
+    """10-vessel smoke-test subset of VesselReID."""
+    dataset_dir = 'VesselReID-smoke'

@@ -131,6 +131,7 @@ _C.SOLVER.MOMENTUM = 0.9
 # Margin of triplet loss
 _C.SOLVER.MARGIN = 0.3
 _C.SOLVER.TOKEN_MARGIN = 0.3
+_C.SOLVER.INFO_NCE_T = 0.1
 # Learning rate of SGD to learn the centers of center loss
 _C.SOLVER.CENTER_LR = 0.5
 # Balanced weight of center loss
