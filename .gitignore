@@ -10,3 +10,6 @@
 
 # Data files (images, datasets)
 /data/
+
+# Training logs (TensorBoard, etc.)
+/logs/
