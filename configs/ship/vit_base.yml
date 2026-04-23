@@ -55,7 +55,7 @@ TEST:
 
 DATASETS:
   NAMES: ('ShipReID2400')
-  ROOT_DIR: ('/media/data1/hrk/code/reid/datasets/ship')
+  ROOT_DIR: ('./data')
 OUTPUT_DIR: './logs/'
 
 #   NAMES: ('dukemtmc')
